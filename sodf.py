@@ -114,6 +114,31 @@ class Sdofs:
             mat = mat @ ninvm
         return self.B @ invm @ res @ self.L.T
 
+    def compute_A_global(self, ratio):
+        size = self.size
+        ncol = 3 * size * ratio
+        nrow = ncol
+        mat = np.zeros((nrow, ncol), np.float64)
+        for p in range(ratio):
+            mat[p * 3 * size:(p + 1) * 3 * size, p * 3 * size:(p + 1) * 3 * size] = self.M
+            if p > 0:
+                mat[p * 3 * size:(p + 1) * 3 * size, (p - 1) * 3 * size:p * 3 * size] = self.N
+        self.A = mat
+        return True
+
+    def compute_global_L_B(self, ratio):
+        """add comments """
+        ndofs = len(self.ldofs)
+        self.GL = np.zeros((ndofs, 3 * self.size * ratio), np.float64)
+        for p in range(ratio):
+            self.GL[:, 3 * p * self.size:3 * (p + 1) * self.size] = (p + 1) / ratio * self.L
+        self.GB = np.zeros((ndofs, 3 * self.size * ratio), np.float64)
+        self.GB[:, 3 * (ratio - 1) * self.size:3 * ratio * self.size] = self.B
+
+    @staticmethod
+    def compute_determinant(mat):
+        return np.linalg.det(mat)
+
 
 class PHSystem:
     """ Only for two subdomains"""
@@ -159,20 +184,25 @@ def compute_trigo_val(x, gamma, ratio):
 
 
 gamma = 0.5
-beta = 0
-ratio = 20
-xi = 0
+beta = 0.
+ratio = 10
+xi = 0.
 x = compute_critical_omh(beta, ratio)
 y = compute_root(x, gamma, beta, xi)
 z = compute_trigo_val(y, gamma, ratio)
 print(z)
 
 mass = 1
-p1 = Sdofs(2)
+p1 = Sdofs(1)
 k = x ** 2 / p1.h ** 2
-p1.set_mat_prop([1,1], [k,1], [])
+p1.set_mat_prop([1], [k], [xi])
+p1.update_newmark(gamma=gamma)
 p1.build_M_N()
 p1.ldofs = [0]
 p1.build_L_B()
 res = p1.compute_H_part(ratio)
+#bol = p1.compute_A_global(ratio)
+#p1.compute_global_L_B(ratio)
+#H = p1.GB @ np.linalg.inv(p1.A) @ p1.GL.T
 print(res)
+#print(H)
