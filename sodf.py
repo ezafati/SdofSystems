@@ -1,7 +1,4 @@
-from typing import List
-
-import numpy as np
-from scipy.optimize import fsolve
+from utils import *
 
 
 class Sdofs:
@@ -103,7 +100,7 @@ class Sdofs:
         for dof, val in dval.items():
             self.B[self.size + dof] = val
 
-    def compute_H_part(self, ratio):
+    def compute_schur_part(self, ratio):
         invm = np.linalg.inv(self.M)
         ninvm = self.N @ invm
         mat = ninvm
@@ -145,7 +142,7 @@ class PHSystem:
 
     def __init__(self, lsdofs=None):
         if isinstance(lsdofs, list):
-            assert len(lsdofs) == 2, "Only two subdomains should be provided"
+            assert len(lsdofs) == 2, "Only two subdomains are accepted"
             lsdofs.sort(key=lambda p: p.h)
             self.lsdofs = lsdofs
             h1 = self.lsdofs[0].h
@@ -161,31 +158,9 @@ class PHSystem:
         pass
 
 
-def compute_critical_omh(beta, ratio):
-    t = np.cos(2 * np.pi / ratio)
-    k = 2 * (1 - t)
-    return np.sqrt(k / (1 - beta * k))
-
-
-def compute_root(x, gamma, beta, xi):
-    gamp = gamma + 2 * xi / x
-    betp = beta + 2 * gamma * xi / x
-    fact = np.power(x, 2) / (1 + betp * np.power(x, 2))
-    re = 0.5 * (-(gamp + 0.5) * fact + 2)
-    im = 0.5 * np.sqrt(4 * fact - np.power(fact, 2) * np.power(gamp + 0.5, 2))
-    return np.complex(real=re, imag=im)
-
-
-def compute_trigo_val(x, gamma, ratio):
-    sum = 0
-    for i in range(1, ratio):
-        sum += np.power(x, i)
-    return np.power(x, ratio) + 1 / gamma * sum
-
-
 gamma = 0.5
 beta = 0.
-ratio = 10
+ratio = 2
 xi = 0.
 x = compute_critical_omh(beta, ratio)
 y = compute_root(x, gamma, beta, xi)
@@ -193,16 +168,16 @@ z = compute_trigo_val(y, gamma, ratio)
 print(z)
 
 mass = 1
-p1 = Sdofs(1)
+p1 = Sdofs(2)
 k = x ** 2 / p1.h ** 2
-p1.set_mat_prop([1], [k], [xi])
+p1.set_mat_prop([1,1], [k,1], [xi,0])
 p1.update_newmark(gamma=gamma)
 p1.build_M_N()
-p1.ldofs = [0]
+p1.ldofs = [0,1]
 p1.build_L_B()
-res = p1.compute_H_part(ratio)
-#bol = p1.compute_A_global(ratio)
-#p1.compute_global_L_B(ratio)
-#H = p1.GB @ np.linalg.inv(p1.A) @ p1.GL.T
+res = p1.compute_schur_part(ratio)
+bol = p1.compute_A_global(ratio)
+p1.compute_global_L_B(ratio)
+H = p1.GB @ np.linalg.inv(p1.A) @ p1.GL.T
 print(res)
 #print(H)
