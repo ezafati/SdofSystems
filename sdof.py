@@ -16,6 +16,10 @@ class Sdofs:
         self.beta = 0.
         self.h = 0.01
 
+        self.L = None
+        self.B = None
+        self.map_dof_row = {}
+
     @property
     def size(self):
         return self._size
@@ -45,7 +49,10 @@ class Sdofs:
             self.beta = beta
         if h:
             self.h = h
-
+    def check_stability(self):
+        h = self.h
+        for p in range
+        omega =
     def build_M_N(self):
         """add comments """
         size = self.size
@@ -86,19 +93,20 @@ class Sdofs:
             self.L = np.zeros((ndofs, 3 * self.size), np.float64)
             for i, dof in enumerate(self.ldofs):
                 self.L[i, dof] = 1
+                self.map_dof_row[dof] = i
             self.B = np.zeros((ndofs, 3 * self.size), np.float64)
             for i, dof in enumerate(self.ldofs):
                 self.B[i, self.size + dof] = 1
+                self.map_dof_row[dof] = i
 
-    def update_L(self, dval):
+    def update_L_B(self, dval):
         """add comments"""
+        if self.B is None or self.L is None:
+            self.build_L_B()
         for dof, val in dval.items():
-            self.L[dof] = val
-
-    def update_B(self, dval):
-        """add comments"""
+            self.L[self.map_dof_row[dof], dof] = val
         for dof, val in dval.items():
-            self.B[self.size + dof] = val
+            self.B[self.map_dof_row[dof], self.size + dof] = val
 
     def compute_schur_part(self, ratio):
         invm = np.linalg.inv(self.M)
@@ -157,7 +165,7 @@ class PHSystem:
     def build_full_system(self):
         pass
 
-
+####### for tests
 gamma = 0.5
 beta = 0.
 ratio = 2
@@ -166,18 +174,19 @@ x = compute_critical_omh(beta, ratio)
 y = compute_root(x, gamma, beta, xi)
 z = compute_trigo_val(y, gamma, ratio)
 print(z)
-
+# plot_eta_e_curves(xi, gamma, beta)
 mass = 1
 p1 = Sdofs(2)
 k = x ** 2 / p1.h ** 2
-p1.set_mat_prop([1,1], [k,1], [xi,0])
+p1.set_mat_prop([1, 1], [k, 1], [xi, 0])
 p1.update_newmark(gamma=gamma)
 p1.build_M_N()
-p1.ldofs = [0,1]
+p1.ldofs = [0, 1]
 p1.build_L_B()
+p1.update_L_B({1: 0})
 res = p1.compute_schur_part(ratio)
 bol = p1.compute_A_global(ratio)
 p1.compute_global_L_B(ratio)
 H = p1.GB @ np.linalg.inv(p1.A) @ p1.GL.T
 print(res)
-#print(H)
+# print(H)
