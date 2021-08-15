@@ -1,10 +1,15 @@
+"""
+  Author: ZAFATI Eliass
+          2021 
+"""
+
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-def compute_critical_omh(beta, ratio):
-    t = np.cos(2 * np.pi / ratio)
+def compute_critical_omh(beta, ratio, l=1):
+    t = np.cos(2 * np.pi * l / ratio)
     k = 2 * (1 - t)
     return np.sqrt(k / (1 - beta * k))
 
@@ -26,7 +31,7 @@ def compute_trigo_val(x, gamma, ratio):
 
 
 def compute_eig_val(x, xi, gamma, beta, ratio):
-    """ for h_2 = 1 """
+    """ add comments """
     h2 = 1
     h1 = h2 / ratio
     nu = h1 * gamma * np.reciprocal((1 + 2 * gamma * xi * x + beta * np.power(x, 2)))
@@ -49,8 +54,26 @@ def plot_eta_e_curves(xi, gamma, beta):
         for x in interval:
             res[i] = compute_eig_val(x, xi, gamma, beta, ratio)
             i += 1
-        ax.plot(interval, res, color=color, linestyle=linestyle, label=r'$m = $' + f'{ratio}')
+        ax.plot(interval, res, color=color, linestyle=linestyle, label=r'$m = $' + str(ratio))
     plt.xlabel(r'$\omega_{1i}h_1$')
     plt.ylabel(r'$\eta_{im}e_{im}(z_{im})$')
     plt.legend()
     plt.show()
+
+
+def plot_critical_omh(beta=0):
+    """add comments"""
+    m_list = range(3, 100)
+    res = []
+    i = 0
+    for ratio in m_list:
+        for k in range(1, 1 + int(ratio / 2)):
+            res.append(compute_critical_omh(beta, ratio, k))
+            i += 1
+    interval = np.array(res)
+    res = np.ones((i,))
+    fig, ax = plt.subplots()
+    ax.plot(interval, res, 'o')
+    plt.xlabel(r'$\omega_{1i}h_1$')
+    plt.show()
+    

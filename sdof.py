@@ -1,3 +1,8 @@
+"""
+  Author: ZAFATI Eliass
+          2021
+"""
+
 from utils import *
 
 
@@ -43,16 +48,19 @@ class Sdofs:
 
     def update_newmark(self, gamma=None, beta=None, h=None):
         """add comments """
-        if gamma:
+        if gamma and isinstance(gamma, float):
             self.gamma = gamma
-        if beta:
+        if beta and isinstance(gamma, float):
             self.beta = beta
-        if h:
+        if h and isinstance(gamma, float):
             self.h = h
+        self.check_stability()
+
     def check_stability(self):
-        h = self.h
-        for p in range
-        omega =
+        """ to add later! be carefull
+        numerical stability should be satisfied !!"""
+        pass
+
     def build_M_N(self):
         """add comments """
         size = self.size
@@ -144,10 +152,8 @@ class Sdofs:
     def compute_determinant(mat):
         return np.linalg.det(mat)
 
-
+"""
 class PHSystem:
-    """ Only for two subdomains"""
-
     def __init__(self, lsdofs=None):
         if isinstance(lsdofs, list):
             assert len(lsdofs) == 2, "Only two subdomains are accepted"
@@ -164,8 +170,9 @@ class PHSystem:
 
     def build_full_system(self):
         pass
+"""
 
-####### for tests
+"""
 gamma = 0.5
 beta = 0.
 ratio = 2
@@ -189,4 +196,4 @@ bol = p1.compute_A_global(ratio)
 p1.compute_global_L_B(ratio)
 H = p1.GB @ np.linalg.inv(p1.A) @ p1.GL.T
 print(res)
-# print(H)
+"""
