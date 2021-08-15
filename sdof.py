@@ -31,6 +31,7 @@ class Sdofs:
 
     def set_mat_prop(self, m: List, k: List, c: List):
         """add comments"""
+
         size = self.size
         if not m and k:
             raise Exception("Fatal error")
@@ -48,6 +49,7 @@ class Sdofs:
 
     def update_newmark(self, gamma=None, beta=None, h=None):
         """add comments """
+
         if gamma and isinstance(gamma, float):
             self.gamma = gamma
         if beta and isinstance(gamma, float):
@@ -62,7 +64,8 @@ class Sdofs:
         pass
 
     def build_M_N(self):
-        """add comments """
+        """Compute M and N """
+
         size = self.size
         M = np.zeros((3 * size, 3 * size), np.float64)
         N = np.zeros((3 * size, 3 * size), np.float64)
@@ -93,6 +96,7 @@ class Sdofs:
 
     def set_imposed_dofs(self, ldofs):
         """add comments"""
+
         self.ldofs = ldofs
 
     def build_L_B(self):
@@ -109,6 +113,7 @@ class Sdofs:
 
     def update_L_B(self, dval):
         """add comments"""
+
         if self.B is None or self.L is None:
             self.build_L_B()
         for dof, val in dval.items():
@@ -128,6 +133,13 @@ class Sdofs:
         return self.B @ invm @ res @ self.L.T
 
     def compute_A_global(self, ratio):
+        """Compute GLOBAL A
+        A = [M 0 . .
+        N M  0 . .
+        0 N M  0 .
+        .
+        .        ]"""
+
         size = self.size
         ncol = 3 * size * ratio
         nrow = ncol
@@ -139,14 +151,22 @@ class Sdofs:
         self.A = mat
         return True
 
-    def compute_global_L_B(self, ratio):
-        """add comments """
+    def compute_global_L_B(self, ratio=1):
+        """ compute global link matrices
+        inupt: ratio
+        if ratio = 1 : domain with corase scale
+        if ratio  > 1: domain with fine scale
+        purpose::
+        GL = [1/ratio*L,2/ratio*L, ..., L]
+        GB = [0,0, ..., B]"""
+
         ndofs = len(self.ldofs)
         self.GL = np.zeros((ndofs, 3 * self.size * ratio), np.float64)
         for p in range(ratio):
             self.GL[:, 3 * p * self.size:3 * (p + 1) * self.size] = (p + 1) / ratio * self.L
         self.GB = np.zeros((ndofs, 3 * self.size * ratio), np.float64)
         self.GB[:, 3 * (ratio - 1) * self.size:3 * ratio * self.size] = self.B
+        return True
 
     @staticmethod
     def compute_determinant(mat):

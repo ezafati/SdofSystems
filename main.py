@@ -52,8 +52,8 @@ def main():
             p2.build_L_B()
             p2.update_L_B({0: 0})
 
-            p2.compute_A_global(ratio)
-            p2.compute_global_L_B(ratio)
+            p2.compute_A_global(1)
+            p2.compute_global_L_B(1)
             H2 = p2.GB @ np.linalg.inv(p2.A) @ p2.GL.T
 
             H = H1 + H2
