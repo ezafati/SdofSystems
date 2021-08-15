@@ -152,6 +152,7 @@ class Sdofs:
     def compute_determinant(mat):
         return np.linalg.det(mat)
 
+
 """
 class PHSystem:
     def __init__(self, lsdofs=None):
@@ -171,6 +172,8 @@ class PHSystem:
     def build_full_system(self):
         pass
 """
+
+####### for tests
 
 """
 gamma = 0.5
@@ -196,4 +199,4 @@ bol = p1.compute_A_global(ratio)
 p1.compute_global_L_B(ratio)
 H = p1.GB @ np.linalg.inv(p1.A) @ p1.GL.T
 print(res)
-"""
+print(H)"""
