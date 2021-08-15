@@ -13,7 +13,7 @@ def main():
     plt.grid()
     gamma = 0.5
     beta = 0.25
-    ratios = [1, 5, 8, 10]
+    ratios = [5, 8, 10]
     lxi = np.linspace(0, 1, num=30)
     res = np.zeros(lxi.shape)
 
