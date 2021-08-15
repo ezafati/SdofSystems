@@ -1,7 +1,8 @@
 from sdof import *
 import sys
 
-def test1():
+
+def main():
     """compute numerically det(SC)"""
     fig, ax = plt.subplots()
     plt.grid()
@@ -22,7 +23,6 @@ def test1():
             # compute critical omega*h
             x = compute_critical_omh(beta, ratio)
 
-
             # stiffness
             k = x ** 2 / p1.h ** 2
             p1.set_mat_prop([1, 1], [k, 1], [xi, xi])
@@ -35,7 +35,6 @@ def test1():
             p1.compute_A_global(ratio)
             p1.compute_global_L_B(ratio)
             H1 = p1.GB @ np.linalg.inv(p1.A) @ p1.GL.T
-
 
             # stiffness
 
@@ -65,4 +64,4 @@ def test1():
 
 
 if __name__ == '__main__':
-    sys.exit(test1())
+    sys.exit(main())
