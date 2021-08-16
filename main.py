@@ -45,7 +45,7 @@ def main():
             # stiffness
 
             p2.set_mat_prop([1], [1], [0])
-            p2.update_newmark(gamma=gamma, beta=beta)
+            #p2.update_newmark(gamma=gamma, beta=beta)
 
             p2.build_M_N()
             p2.ldofs = [0, 1]
