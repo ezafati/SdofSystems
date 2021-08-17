@@ -7,7 +7,7 @@ from utils import *
 
 
 class Sdofs:
-    """ SDOF CLASS """
+    """ SDOFs CLASS """
 
     def __init__(self, size=None, ldofs=None):
         self.ldofs = ldofs
