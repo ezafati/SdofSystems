@@ -31,7 +31,7 @@ def main():
 
             # stiffness
             k = x ** 2 / p1.h ** 2
-            p1.set_mat_prop([1, 0.01], [k, 10], [xi, xi])
+            p1.set_mat_prop([1, 1], [k, 0.01], [xi, 0])
             p1.update_newmark(gamma=gamma, beta=beta)
 
             p1.build_M_N()
