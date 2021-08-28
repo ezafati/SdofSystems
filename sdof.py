@@ -15,6 +15,7 @@ class Sdofs:
         self._m = None
         self._k = None
         self._c = None
+        self._not_diri = None
 
         # default values for Newmark parameters
         self.gamma = 0.5
@@ -63,6 +64,9 @@ class Sdofs:
         numerical stability should be satisfied !!"""
         pass
 
+    def not_dirichlet_row(self,rows):
+        self._not_diri = rows
+
     def build_M_N(self):
         """Compute M and N """
 
@@ -99,17 +103,22 @@ class Sdofs:
 
         self.ldofs = ldofs
 
+    def set_nb_constraints(self, nb):
+        self.nconst = len(self.ldofs)
+
     def build_L_B(self):
         if self.ldofs:
             ndofs = len(self.ldofs)
             self.L = np.zeros((ndofs, 3 * self.size), np.float64)
             for i, dof in enumerate(self.ldofs):
-                self.L[i, dof] = 1
-                self.map_dof_row[dof] = i
+                if self._not_diri is None or i not in self._not_diri:
+                    self.L[i, dof] = 1
+                    self.map_dof_row[dof] = i
             self.B = np.zeros((ndofs, 3 * self.size), np.float64)
             for i, dof in enumerate(self.ldofs):
-                self.B[i, self.size + dof] = 1
-                self.map_dof_row[dof] = i
+                if self._not_diri is None or i not in self._not_diri:
+                    self.B[i, self.size + dof] = 1
+                    self.map_dof_row[dof] = i
 
     def update_L_B(self, dval):
         """add comments"""

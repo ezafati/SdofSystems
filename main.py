@@ -48,9 +48,10 @@ def main():
             #p2.update_newmark(gamma=gamma, beta=beta)
 
             p2.build_M_N()
-            p2.ldofs = [0, 1]
+            p2.ldofs = [0, 0]
+            p2.not_dirichlet_row([0])
             p2.build_L_B()
-            p2.update_L_B({0: 0})
+            #p2.update_L_B({0: 0})
 
             p2.compute_A_global(1)
             p2.compute_global_L_B(1)
